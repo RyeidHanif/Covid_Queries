@@ -1,0 +1,4 @@
+covid_files
+data_inject_script.py
+db_conf.env
+__pycache__

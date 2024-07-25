@@ -36,4 +36,3 @@ class SqlQueries:
         f"({columns_str} )"
         "VALUES (%s, %s, %s,%s,%s,%s,%s,%s, %s)"
     )
-

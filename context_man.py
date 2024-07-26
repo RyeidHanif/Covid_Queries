@@ -1,8 +1,12 @@
 import mysql.connector
-from mysql.connector import errorcode
 
 
 class ContextManagerDB:
+    """
+    Context manager in this instance is used for connection with the database covid_stats_db and imports credentials form the env file
+    it automatically  opens and closes the connection with the database , preventing any issues in the programs
+    """
+
     def __init__(self, user, password, host, database):
         self.config = {
             "user": user,

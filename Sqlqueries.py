@@ -1,3 +1,5 @@
+"""this module is needed to separate SQL queries from the rest of the programs for ease of understanding """
+
 cols_needed = [
     "Province_State",
     "Country_Region",
@@ -14,6 +16,10 @@ columns_str = ", ".join(cols_needed)
 
 
 class SqlQueries:
+    """
+    contains 2 queries : one for creating the table with a unique constraint of three columns combined
+    data insert then uses column string to assign column names and %s placeholders to add the tuple during the execution which contains the row's actual values
+    """
 
     Create_Table = (
         "CREATE TABLE covid_stats ("

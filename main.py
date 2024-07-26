@@ -1,3 +1,5 @@
+"""Imports private data regarding the Database management system , call functions for the conext manager , downoading and injecting data """
+
 from injector import Inject
 from context_man import ContextManagerDB
 from dotenv import load_dotenv, dotenv_values

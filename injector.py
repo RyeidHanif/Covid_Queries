@@ -1,3 +1,8 @@
+"""
+This Module is responsible for first downloading every file using the API Key , converting it into a string , then a file like object and processing it 
+the download function then injects the list of objects of the CovidHandler class into the covid database 
+"""
+
 import mysql.connector
 from mysql.connector import errorcode
 from Sqlqueries import SqlQueries
@@ -16,6 +21,11 @@ logging.basicConfig(level=logging.INFO)
 
 
 class Inject:
+    """
+    The inject class takes in attributes for initialization cnx and cursor , both of which are required for communication with the database
+    They are not declared here but in the context manager to automatically enter and close the connection when required
+    """
+
     cols_needed = [
         "Province_State",
         "Country_Region",
@@ -50,12 +60,17 @@ class Inject:
 
     def rename_key(self, data_dict, old_key, new_key):
         if old_key in data_dict:
-            data_dict[new_key] = data_dict[
-                old_key
-            ]  # Add the new key with the same value
-            del data_dict[old_key]  # Remove the old key
+            data_dict[new_key] = data_dict[old_key]
+            del data_dict[old_key]
 
     def download(self):
+        """
+        Each file is downloaded one by one .  A list of dictionaries (files) is iterated over to get the download URL for each file
+        Each file is then converted to a string using .text and then a stringio object . The reason for that is t oallow the file to be processed
+        without downloading it into the local disk .
+        Returns a list of objects , with each object being a row in a file . in total 3.5 million objects
+        the format is : [obj1 ,obj2 obj3]"
+        """
         response = requests.get(API_URL)
         files = response.json()
         all_rows = []
@@ -63,23 +78,15 @@ class Inject:
         for file_info in files:
             file_rows = []
 
-            if file_info["type"] == "file":  # checking if hte type is file
-                file_name = file_info[
-                    "name"
-                ]  # for every file in al the thousand files name is the date
+            if file_info["type"] == "file":
+                file_name = file_info["name"]
                 print(f"The current file being processed is : {file_name}")
-                if ".csv" in  file_name:
-                    download_url = file_info[
-                        "download_url"
-                    ]  # need download url , use strio to then convert it to file like object
+                if ".csv" in file_name:
+                    download_url = file_info["download_url"]
                     file_response = requests.get(download_url)
-                    file_response = (
-                        file_response.text
-                    )  # convert it into a string to be processed by string io
+                    file_response = file_response.text
                     file = StringIO(file_response)
-                    csv_dict_read = csv.DictReader(
-                        file
-                    )  # converts it into a list of dictionaries
+                    csv_dict_read = csv.DictReader(file)
 
                     for each_row in csv_dict_read:
                         keys = list(each_row.keys())
@@ -105,12 +112,16 @@ class Inject:
                             each_row.get("Active", None),
                             each_row.get("Incident_Rate", None),
                             each_row.get("Case_Fatality_Ratio", None),
-)
+                        )
                         file_rows.append(record)
                     all_rows.extend(file_rows)
         return all_rows
 
     def inject_data(self, total_rows, batch_size=1000):
+        """
+        During data injecction , a batchsize of a 1000 is used to divide the rows into smaller parts so the system does not get overwhelmed with millions
+        of execute and commit requests . This also allows for better debugging and print statements to tell which batch is being injected
+        """
         data_insert_query = SqlQueries.data_insert_ready
 
         rows_to_insert = [
@@ -130,7 +141,7 @@ class Inject:
 
         total_count = len(rows_to_insert)
         for i in range(0, total_count, batch_size):
-            batch = rows_to_insert[i:i + batch_size]
+            batch = rows_to_insert[i : i + batch_size]
             try:
                 self.cursor.executemany(data_insert_query, batch)
                 self.cnx.commit()

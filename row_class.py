@@ -1,8 +1,15 @@
+"""This module is required for simplicity of the script and to prevent multiple lists of dictionaries from being used """
+
 import datetime
 from datetime import datetime
 
 
 class CovidRowHandler:
+    """
+    Requires multiple attributes , each corresponding to one column in the database . The correponding attribute is then called upon when the object
+    is converted into a tuple and executed
+    """
+
     cols_needed = [
         "Province_State",
         "Country_Region",
@@ -39,6 +46,11 @@ class CovidRowHandler:
         self.Case_Fatality_Ratio = Case_Fatality_Ratio if not None else 0
 
     def clean_date(self, date_str):
+        """
+        in many CSV filles,  dates are in a plethora of different formats which MySql does not accept. Theyn eed to be converted first
+        to the official datetiime format which this function does .
+        Returns the date in the format : yyyy-mm-dd hh:mm:ss with zero padding
+        """
         if not date_str:
             return "1970-02-03 11:59:59"
 

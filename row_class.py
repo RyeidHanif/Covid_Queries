@@ -10,40 +10,41 @@ class CovidRowHandler:
     is converted into a tuple and executed
     """
 
-    cols_needed = [
-        "Province_State",
-        "Country_Region",
-        "Last_Update",
-        "Confirmed",
-        "Active",
-        "Deaths",
-        "Recovered",
-        "Incident_Rate",
-        "Case_Fatality_Ratio",
-    ]
-    columns_str = ", ".join(cols_needed)
+    @classmethod
+    def from_dict(cls, row_dict):
+        return cls(
+            province_state=row_dict.get("Province_State", None),
+            country_region=row_dict.get("Country_Region", None),
+            last_update=row_dict.get("Last_Update", None),
+            confirmed=row_dict.get("Confirmed", None),
+            deaths=row_dict.get("Deaths", None),
+            recovered=row_dict.get("Recovered", None),
+            active=row_dict.get("Active", None),
+            incident_rate=row_dict.get("Incident_Rate", None),
+            case_fatality_ratio=row_dict.get("Case_Fatality_Ratio", None),
+        )
 
     def __init__(
         self,
-        Province_State=None,
-        Country_Region=None,
-        Last_Update=None,
-        Confirmed=None,
-        Deaths=None,
-        Recovered=None,
-        Active=None,
-        Incident_Rate=None,
-        Case_Fatality_Ratio=None,
+        province_state=None,
+        country_region=None,
+        last_update=None,
+        confirmed=None,
+        deaths=None,
+        recovered=None,
+        active=None,
+        incident_rate=None,
+        case_fatality_ratio=None,
     ):
-        self.Province_State = Province_State if not None else "N/A"
-        self.Country_Region = Country_Region if not None else "N/A"
-        self.Last_Update = self.clean_date(Last_Update)
-        self.Confirmed = Confirmed if not None else 0
-        self.Deaths = Deaths if not None else 0
-        self.Recovered = Recovered if not None else 0
-        self.Active = Active if not None else 0
-        self.Incident_Rate = Incident_Rate if not None else 0
-        self.Case_Fatality_Ratio = Case_Fatality_Ratio if not None else 0
+        self.province_state = province_state if not None else "N/A"
+        self.country_region = country_region if not None else "N/A"
+        self.last_update = self.clean_date(last_update)
+        self.confirmed = confirmed if not None else 0
+        self.deaths = deaths if not None else 0
+        self.recovered = recovered if not None else 0
+        self.active = active if not None else 0
+        self.incident_rate = incident_rate if not None else 0
+        self.case_fatality_ratio = case_fatality_ratio if not None else 0
 
     def clean_date(self, date_str):
         """
@@ -74,3 +75,16 @@ class CovidRowHandler:
             return parsed_date.strftime("%Y-%m-%d %H:%M:%S")
         except ValueError:
             return "1970-02-03 11:59:59"
+
+    def __dir__(self):
+        return [
+            self.province_state,
+            self.country_region,
+            self.last_update,
+            self.confirmed,
+            self.deaths,
+            self.recovered,
+            self.active,
+            self.incident_rate,
+            self.case_fatality_ratio,
+        ]

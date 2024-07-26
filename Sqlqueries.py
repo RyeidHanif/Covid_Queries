@@ -1,18 +1,6 @@
 """this module is needed to separate SQL queries from the rest of the programs for ease of understanding """
 
-cols_needed = [
-    "Province_State",
-    "Country_Region",
-    "Last_Update",
-    "Confirmed",
-    "Active",
-    "Deaths",
-    "Recovered",
-    "Incident_Rate",
-    "Case_Fatality_Ratio",
-]
-
-columns_str = ", ".join(cols_needed)
+from constants import COLS_NEEDED, COLUMNS_STR
 
 
 class SqlQueries:
@@ -24,21 +12,21 @@ class SqlQueries:
     Create_Table = (
         "CREATE TABLE covid_stats ("
         "area_date_ID bigint PRIMARY KEY AUTO_INCREMENT, "
-        "Province_State varchar(100), "
-        "Country_Region varchar(100), "
-        "Last_Update datetime, "
-        "Confirmed bigint, "
-        "Active bigint, "
-        "Deaths bigint, "
-        "Recovered bigint, "
-        "Incident_Rate float(13,3), "
-        "Case_Fatality_Ratio float(13,3), "
-        "CONSTRAINT unique_cols UNIQUE (Country_Region, Province_State, Last_Update)"
+        "province_state varchar(100), "
+        "country_region varchar(100), "
+        "last_update datetime, "
+        "confirmed bigint, "
+        "active bigint, "
+        "deaths bigint, "
+        "recovered bigint, "
+        "incident_rate float(13,3), "
+        "case_fatality_ratio float(13,3), "
+        "CONSTRAINT unique_cols UNIQUE (country_region, province_state, last_update)"
         ")"
     )
 
     data_insert_ready = (
         "INSERT IGNORE INTO covid_stats"
-        f"({columns_str} )"
+        f"({COLUMNS_STR} )"
         "VALUES (%s, %s, %s,%s,%s,%s,%s,%s, %s)"
     )
